@@ -591,6 +591,7 @@ ui <- dashboardPage(
       menuItem("Both Coordinates",   tabName = "both_tab", icon = icon("layer-group")),
       menuItem("Heat Maps",          tabName = "heat_tab", icon = icon("fire")),
       menuItem("Elephant Tracking", tabName = "tracking_tab",icon = icon("map")),
+      menuItem("Live Elephant Path", tabName = "live_tab", icon = icon("play")),
       menuItem("Migration & Climate", tabName = "climate_tab",icon = icon("globe")),
       menuItem("Data Table",         tabName = "data_tab", icon = icon("table")),
       menuItem("Home Range & Speed", tabName = "mcp_tab",  icon = icon("compass"))
@@ -1042,6 +1043,20 @@ table.dataTable td{
               ),
               fluidRow(
                 box(
+                  title = "\U0001F5FA Live Position — Synced with Latitude Chart",
+                  width = 12, solidHeader = TRUE,
+                  tags$p(
+                    style = "color:#666; font-size:11px; margin-bottom:6px;",
+                    "Hover over a point on the Latitude vs Time chart above:",
+                    "the map below jumps to that elephant's position at that",
+                    "moment and draws the path travelled up to it, so you can",
+                    "see exactly where — and in which direction — it moved."
+                  ),
+                  leafletOutput("sync_map_lat", height = "420px")
+                )
+              ),
+              fluidRow(
+                box(
                   title = "\U0001F4DA Literature Context — Latitude & Elephant Ranging in Sri Lanka",
                   width = 12, solidHeader = TRUE,
                   tags$div(style = "display:flex; flex-wrap:wrap; gap:20px; padding:4px 0;",
@@ -1094,6 +1109,20 @@ table.dataTable td{
                     "(Pastorini et al. 2010; Wildlife Dept. Sri Lanka 2023 Annual Report)."
                   ),
                   plotlyOutput("plot_lon", height = "460px")
+                )
+              ),
+              fluidRow(
+                box(
+                  title = "\U0001F5FA Live Position — Synced with Longitude Chart",
+                  width = 12, solidHeader = TRUE,
+                  tags$p(
+                    style = "color:#666; font-size:11px; margin-bottom:6px;",
+                    "Hover over a point on the Longitude vs Time chart above:",
+                    "the map below jumps to that elephant's position at that",
+                    "moment and draws the path travelled up to it, so you can",
+                    "see exactly where — and in which direction — it moved."
+                  ),
+                  leafletOutput("sync_map_lon", height = "420px")
                 )
               ),
               fluidRow(
@@ -1152,6 +1181,19 @@ table.dataTable td{
                     "movement toward agricultural areas on the eastern boundary."
                   ),
                   plotlyOutput("plot_both", height = "600px")
+                )
+              ),
+              fluidRow(
+                box(
+                  title = "\U0001F5FA Live Position — Synced with Lat/Lon Chart",
+                  width = 12, solidHeader = TRUE,
+                  tags$p(
+                    style = "color:#666; font-size:11px; margin-bottom:6px;",
+                    "Hover over a point on the Lat/Lon chart above: the map",
+                    "below jumps to that elephant's position at that moment",
+                    "and draws the path travelled up to it."
+                  ),
+                  leafletOutput("sync_map_both", height = "420px")
                 )
               ),
               fluidRow(
@@ -1309,6 +1351,71 @@ table.dataTable td{
                   ),
                   
                   plotOutput("tracking_by_elephant", height = 800, width = "100%")
+              )
+      ),
+      
+      
+      # ── TAB 5b : Live Elephant Path ──────────────────────────────────────────
+      tabItem("live_tab",
+              fluidRow(
+                box(
+                  title = "\U0001F418 Choose Elephant", width = 4, solidHeader = TRUE,
+                  selectInput(
+                    "live_elephant", NULL,
+                    choices  = sort(unique(elephants_df$name)),
+                    selected = sort(unique(elephants_df$name))[1]
+                  ),
+                  selectInput(
+                    "live_month", "Month",
+                    choices  = month_choices,
+                    selected = "all"
+                  ),
+                  tags$p(
+                    style = "color:#666; font-size:11px; margin: -6px 0 10px;",
+                    "Elephant + Month here are specific to this page.",
+                    "The sidebar's Date Range still applies too.",
+                    "Press \u25B6 on the slider to animate, or drag it."
+                  ),
+                  uiOutput("live_info_box")
+                ),
+                box(
+                  title = "\U0001F3AC Playback", width = 8, solidHeader = TRUE,
+                  uiOutput("live_slider_ui")
+                )
+              ),
+              fluidRow(
+                box(
+                  title = "\U0001F5FA Live Map — Path Drawn in Real Time",
+                  width = 12, solidHeader = TRUE,
+                  tags$p(
+                    style = "color:#666; font-size:11px; margin-bottom:6px;",
+                    "The shaded polygon is the elephant's home-range (convex",
+                    "hull) built only from the fixes seen so far — watch it",
+                    "expand and reshape as more of the path is revealed."
+                  ),
+                  leafletOutput("live_map", height = 500)
+                )
+              ),
+              fluidRow(
+                box(
+                  title = "\U0001F4D0 Home-Range (Hull) Area — Growing Live", width = 12, solidHeader = TRUE,
+                  tags$p(
+                    style = "color:#666; font-size:11px; margin-bottom:6px;",
+                    "Convex-hull area (km\u00B2) computed from only the fixes",
+                    "revealed so far. Needs at least 3 fixes to form a polygon."
+                  ),
+                  plotlyOutput("live_hull_plot", height = "300px")
+                )
+              ),
+              fluidRow(
+                box(
+                  title = "\U0001F4CD Latitude vs Time (live)", width = 6, solidHeader = TRUE,
+                  plotlyOutput("live_lat_plot", height = "320px")
+                ),
+                box(
+                  title = "\U0001F4CD Longitude vs Time (live)", width = 6, solidHeader = TRUE,
+                  plotlyOutput("live_lon_plot", height = "320px")
+                )
               )
       ),
       
@@ -1556,11 +1663,11 @@ server <- function(input, output, session) {
   })
   
   # ── Helper: single-coordinate plotly scatter ────────────────────────────────
-  make_plot <- function(df, y_col, y_title, ref_lines = NULL) {
+  make_plot <- function(df, y_col, y_title, ref_lines = NULL, plot_source = NULL) {
     elephants_in_data <- unique(df$name)
     col_map <- ELEPHANT_COLOURS[names(ELEPHANT_COLOURS) %in% elephants_in_data]
     
-    p <- plot_ly()
+    p <- plot_ly(source = plot_source)
     
     for (el in elephants_in_data) {
       sub <- df %>% filter(name == el) %>% arrange(datetime_sl)
@@ -1637,11 +1744,11 @@ server <- function(input, output, session) {
   }
   
   # ── Helper: dual-axis plot — latitude & longitude overlaid ──────────────────
-  make_dual_axis_plot <- function(df) {
+  make_dual_axis_plot <- function(df, plot_source = NULL) {
     elephants_in_data <- unique(df$name)
     col_map <- ELEPHANT_COLOURS[names(ELEPHANT_COLOURS) %in% elephants_in_data]
     
-    p <- plot_ly()
+    p <- plot_ly(source = plot_source)
     
     for (el in elephants_in_data) {
       sub <- df %>% filter(name == el) %>% arrange(datetime_sl)
@@ -1760,7 +1867,7 @@ server <- function(input, output, session) {
       list(val = 8.080, color = "#ef9a9a", label = "S. Park Boundary (~8.080\u00B0N)"),
       list(val = 8.220, color = "#ef9a9a", label = "N. Park Boundary (~8.220\u00B0N)")
     )
-    make_plot(df, "lat", "Latitude (\u00B0N, WGS84)", ref_lines)
+    make_plot(df, "lat", "Latitude (\u00B0N, WGS84)", ref_lines, plot_source = "lat_plotly")
   })
   
   # ── Longitude plot ───────────────────────────────────────────────────────────
@@ -1772,16 +1879,388 @@ server <- function(input, output, session) {
       list(val = 80.950, color = "#ef9a9a", label = "E. Park Boundary (~80.950\u00B0E)"),
       list(val = 80.872, color = "#ef9a9a", label = "W. Park Boundary (~80.872\u00B0E)")
     )
-    make_plot(df, "lon", "Longitude (\u00B0E, WGS84)", ref_lines)
+    make_plot(df, "lon", "Longitude (\u00B0E, WGS84)", ref_lines, plot_source = "lon_plotly")
   })
   
   # ── Both coordinates (dual y-axis) ──────────────────────────────────────────
   output$plot_both <- renderPlotly({
     df <- agg_data()
     validate(need(nrow(df) > 0, "No data for the selected filters."))
-    make_dual_axis_plot(df)
+    make_dual_axis_plot(df, plot_source = "both_plotly")
   })
   
+  # ══════════════════════════════════════════════════════════════════════════
+  # SYNCED MAP — hovering on the Lat/Lon/Both time-series charts moves a
+  # marker on the map to that exact GPS fix and draws the path travelled so
+  # far, per elephant, so direction of movement is visible at a glance.
+  # ══════════════════════════════════════════════════════════════════════════
+
+  # ── Robustly turn whatever plotly gives back for the x-hover value into a
+  #    POSIXct in Sri-Lanka time ──────────────────────────────────────────────
+  parse_hover_time <- function(x) {
+    if (is.null(x)) return(NULL)
+    if (is.numeric(x)) {
+      # plotly sometimes reports epoch milliseconds for datetime axes
+      return(as.POSIXct(x / 1000, origin = "1970-01-01", tz = "Asia/Colombo"))
+    }
+    t <- suppressWarnings(as.POSIXct(x, tz = "Asia/Colombo"))
+    if (is.na(t)) {
+      t <- suppressWarnings(as.POSIXct(x, format = "%Y-%m-%d %H:%M:%S", tz = "Asia/Colombo"))
+    }
+    t
+  }
+
+  get_col <- function(nm) {
+    if (nm %in% names(ELEPHANT_COLOURS)) unname(ELEPHANT_COLOURS[[nm]]) else "#888888"
+  }
+
+  # Single reactive "scrubber" position, driven by whichever chart the user
+  # is hovering over (Latitude, Longitude, or the combined Both-Coordinates
+  # chart) — all three synced maps below react to it.
+  hover_time <- reactiveVal(NULL)
+
+  observeEvent(event_data("plotly_hover", source = "lat_plotly"), {
+    ed <- event_data("plotly_hover", source = "lat_plotly")
+    t  <- parse_hover_time(ed$x)
+    if (!is.null(t) && !is.na(t)) hover_time(t)
+  })
+  observeEvent(event_data("plotly_hover", source = "lon_plotly"), {
+    ed <- event_data("plotly_hover", source = "lon_plotly")
+    t  <- parse_hover_time(ed$x)
+    if (!is.null(t) && !is.na(t)) hover_time(t)
+  })
+  observeEvent(event_data("plotly_hover", source = "both_plotly"), {
+    ed <- event_data("plotly_hover", source = "both_plotly")
+    t  <- parse_hover_time(ed$x)
+    if (!is.null(t) && !is.na(t)) hover_time(t)
+  })
+
+  # ── Base map (context layer): full, faint tracks for every elephant that
+  #    passes the current filters — redrawn only when the filters change,
+  #    NOT on every hover (that's handled separately via leafletProxy) ───────
+  build_base_sync_map <- function(df) {
+    elephants_in_data <- sort(unique(df$name))
+
+    m <- leaflet() %>%
+      addProviderTiles("CartoDB.Positron", group = "Light") %>%
+      addProviderTiles("Esri.WorldImagery", group = "Satellite") %>%
+      addLayersControl(
+        baseGroups = c("Light", "Satellite"),
+        options    = layersControlOptions(collapsed = TRUE)
+      )
+
+    for (el in elephants_in_data) {
+      sub <- df %>% filter(name == el) %>% arrange(datetime_sl)
+      sub <- sub[!is.na(sub$lat) & !is.na(sub$lon), ]
+      if (nrow(sub) < 2) next
+      m <- m %>% addPolylines(
+        data = sub, lng = ~lon, lat = ~lat,
+        color = get_col(el), weight = 1.5, opacity = 0.35,
+        group = "context"
+      )
+    }
+
+    if (nrow(df) > 0) {
+      m <- m %>% fitBounds(
+        lng1 = min(df$lon, na.rm = TRUE), lat1 = min(df$lat, na.rm = TRUE),
+        lng2 = max(df$lon, na.rm = TRUE), lat2 = max(df$lat, na.rm = TRUE)
+      )
+    }
+
+    if (length(elephants_in_data) > 0) {
+      m <- m %>% addLegend(
+        "bottomright",
+        colors  = vapply(elephants_in_data, get_col, character(1)),
+        labels  = elephants_in_data,
+        title   = "Elephant", opacity = 0.9
+      )
+    }
+    m
+  }
+
+  output$sync_map_lat  <- renderLeaflet({ build_base_sync_map(agg_data()) })
+  output$sync_map_lon  <- renderLeaflet({ build_base_sync_map(agg_data()) })
+  output$sync_map_both <- renderLeaflet({ build_base_sync_map(agg_data()) })
+
+  # ── Progress layer: on every hover, redraw (via proxy, no full re-render)
+  #    each elephant's path up to the hovered time plus a bold "current
+  #    position" marker, so consecutive hover points are joined by a line ──
+  update_sync_progress <- function(map_id) {
+    df <- agg_data()
+    ht <- hover_time()
+
+    proxy <- leafletProxy(map_id) %>% clearGroup("progress")
+    if (is.null(ht) || nrow(df) == 0) return(invisible(NULL))
+
+    elephants_in_data <- sort(unique(df$name))
+
+    for (el in elephants_in_data) {
+      sub <- df %>%
+        filter(name == el, datetime_sl <= ht) %>%
+        arrange(datetime_sl)
+      sub <- sub[!is.na(sub$lat) & !is.na(sub$lon), ]
+      if (nrow(sub) == 0) next
+
+      clr <- get_col(el)
+
+      if (nrow(sub) >= 2) {
+        proxy <- proxy %>% addPolylines(
+          data = sub, lng = ~lon, lat = ~lat,
+          color = clr, weight = 3, opacity = 0.95,
+          group = "progress"
+        )
+      }
+
+      cur <- sub[nrow(sub), ]
+      proxy <- proxy %>%
+        addCircleMarkers(
+          data = cur, lng = ~lon, lat = ~lat,
+          radius = 7, color = "#ffffff", weight = 2,
+          fillColor = clr, fillOpacity = 1,
+          group = "progress",
+          popup = ~paste0(
+            "<b>", name, "</b><br>",
+            format(datetime_sl, "%d %b %Y %H:%M"), "<br>",
+            "Lat: ", round(lat, 5), "\u00B0N<br>",
+            "Lon: ", round(lon, 5), "\u00B0E"
+          ),
+          label = ~paste0(name, " \u2014 ", format(datetime_sl, "%d %b %Y %H:%M"))
+        )
+    }
+    invisible(NULL)
+  }
+
+  observeEvent(hover_time(), {
+    update_sync_progress("sync_map_lat")
+    update_sync_progress("sync_map_lon")
+    update_sync_progress("sync_map_both")
+  }, ignoreNULL = FALSE)
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # LIVE ELEPHANT PATH — a dedicated page: pick ONE elephant, then press the
+  # slider's play button to watch its GPS path get drawn frame-by-frame on
+  # the map, in perfect time-sync with the Latitude/Longitude charts below.
+  # ══════════════════════════════════════════════════════════════════════════
+
+  # Data for the chosen elephant only, respecting the sidebar's Date Range /
+  # Month filters but NOT the multi-elephant "Select Elephants" checklist
+  # (so this page always shows whichever elephant you pick here).
+  live_base_data <- reactive({
+    req(input$live_elephant, input$date_range)
+    df <- elephants_df %>%
+      filter(
+        name == input$live_elephant,
+        date_parsed >= input$date_range[1],
+        date_parsed <= input$date_range[2]
+      )
+    if (!is.null(input$live_month) && input$live_month != "all") {
+      df <- df %>% filter(format(date_parsed, "%Y-%m") == input$live_month)
+    }
+    df %>% arrange(datetime_sl)
+  })
+
+  # ── Playback slider — rebuilt whenever the elephant/date range changes,
+  #    so it always spans exactly that elephant's number of GPS fixes ───────
+  output$live_slider_ui <- renderUI({
+    df <- live_base_data()
+    validate(need(nrow(df) > 0, "No GPS fixes for this elephant in the selected date range."))
+    sliderInput(
+      "live_frame",
+      paste0("Fix 1 of ", nrow(df), " \u2014 drag or press \u25B6 to animate"),
+      min = 1, max = nrow(df), value = 1, step = 1, width = "100%",
+      animate = animationOptions(interval = 250, loop = FALSE)
+    )
+  })
+
+  # ── Convex-hull (home-range) area at every cumulative fix count, computed
+  #    once per elephant/month/date-range change (not on every frame tick) ──
+  live_hull_series <- reactive({
+    df <- live_base_data()
+    n  <- nrow(df)
+    areas <- rep(NA_real_, n)
+    if (n >= 3) {
+      for (i in 3:n) {
+        h <- tryCatch(mcp_compute_hull(df[seq_len(i), ]), error = function(e) NULL)
+        areas[i] <- if (is.null(h)) NA_real_ else h$area_km2
+      }
+    }
+    areas
+  })
+
+  # ── Current-position info card ──────────────────────────────────────────
+  output$live_info_box <- renderUI({
+    df <- live_base_data()
+    req(nrow(df) > 0, input$live_frame)
+    n   <- min(input$live_frame, nrow(df))
+    cur <- df[n, ]
+    step_km <- if (n > 1) {
+      round(mcp_haversine_km(df$lat[n - 1], df$lon[n - 1], df$lat[n], df$lon[n]), 3)
+    } else NA_real_
+    hull_km2 <- live_hull_series()[n]
+
+    tags$div(
+      style = "font-size:12px; line-height:1.9; margin-top:4px;",
+      tags$p(tags$b("Elephant: "), cur$name),
+      tags$p(tags$b("Time: "), format(cur$datetime_sl, "%d %b %Y %H:%M"), " (SL time)"),
+      tags$p(tags$b("Latitude: "), round(cur$lat, 5), "\u00B0N"),
+      tags$p(tags$b("Longitude: "), round(cur$lon, 5), "\u00B0E"),
+      tags$p(tags$b("Step distance: "), if (is.na(step_km)) "\u2014" else paste0(step_km, " km")),
+      tags$p(tags$b("Hull area so far: "), if (is.na(hull_km2)) "\u2014 (need \u2265 3 fixes)" else paste0(round(hull_km2, 3), " km\u00B2")),
+      tags$p(tags$b("Progress: "), n, " / ", nrow(df), " fixes")
+    )
+  })
+
+  # ── Base map: full faint track for the chosen elephant — rebuilt only
+  #    when the elephant or date range changes, not on every frame ─────────
+  output$live_map <- renderLeaflet({
+    df <- live_base_data()
+    validate(need(nrow(df) > 0, "No GPS fixes for this elephant in the selected date range."))
+    clr <- get_col(input$live_elephant)
+
+    m <- leaflet() %>%
+      addProviderTiles("CartoDB.Positron", group = "Light") %>%
+      addProviderTiles("Esri.WorldImagery", group = "Satellite") %>%
+      addLayersControl(
+        baseGroups = c("Light", "Satellite"),
+        options    = layersControlOptions(collapsed = TRUE)
+      ) %>%
+      addPolylines(
+        data = df, lng = ~lon, lat = ~lat,
+        color = clr, weight = 1.5, opacity = 0.25, group = "context"
+      ) %>%
+      fitBounds(
+        lng1 = min(df$lon, na.rm = TRUE), lat1 = min(df$lat, na.rm = TRUE),
+        lng2 = max(df$lon, na.rm = TRUE), lat2 = max(df$lat, na.rm = TRUE)
+      )
+    m
+  })
+
+  # ── Frame-by-frame progress: fires every time the slider moves (manually
+  #    or via the animate/play button), redrawing only the "in-progress"
+  #    layer via leafletProxy — this is what makes the path draw live ───────
+  observeEvent(input$live_frame, {
+    df <- live_base_data()
+    req(nrow(df) > 0)
+    n   <- min(input$live_frame, nrow(df))
+    sub <- df[seq_len(n), ]
+    clr <- get_col(input$live_elephant)
+
+    proxy <- leafletProxy("live_map") %>% clearGroup("liveprogress")
+
+    # Growing convex-hull (home-range) polygon, built only from fixes so far
+    if (nrow(sub) >= 3) {
+      hull <- tryCatch(mcp_compute_hull(sub), error = function(e) NULL)
+      if (!is.null(hull)) {
+        proxy <- proxy %>% addPolygons(
+          lng = hull$lons, lat = hull$lats,
+          color = clr, weight = 1.5, dashArray = "4",
+          fillColor = clr, fillOpacity = 0.12,
+          group = "liveprogress"
+        )
+      }
+    }
+
+    if (nrow(sub) >= 2) {
+      proxy <- proxy %>% addPolylines(
+        data = sub, lng = ~lon, lat = ~lat,
+        color = clr, weight = 3.5, opacity = 0.95, group = "liveprogress"
+      )
+    }
+    cur <- sub[nrow(sub), ]
+    proxy %>% addCircleMarkers(
+      data = cur, lng = ~lon, lat = ~lat,
+      radius = 8, color = "#ffffff", weight = 2,
+      fillColor = clr, fillOpacity = 1, group = "liveprogress",
+      popup = ~paste0(
+        "<b>", name, "</b><br>",
+        format(datetime_sl, "%d %b %Y %H:%M"), "<br>",
+        "Lat: ", round(lat, 5), "\u00B0N<br>",
+        "Lon: ", round(lon, 5), "\u00B0E"
+      )
+    )
+  })
+
+  # ── Live home-range (hull) area chart — grows as frames advance ──────────
+  output$live_hull_plot <- renderPlotly({
+    df <- live_base_data()
+    validate(need(nrow(df) >= 3, "Need at least 3 GPS fixes to compute a home-range polygon."))
+    req(input$live_frame)
+    n     <- min(input$live_frame, nrow(df))
+    areas <- live_hull_series()
+    clr   <- get_col(input$live_elephant)
+
+    full_df <- data.frame(datetime_sl = df$datetime_sl, area_km2 = areas)
+    sub_df  <- full_df[seq_len(n), ]
+
+    plot_ly() %>%
+      add_trace(
+        data = full_df, x = ~datetime_sl, y = ~area_km2,
+        type = "scatter", mode = "lines", name = "Final",
+        line = list(color = clr, width = 1, dash = "dot"),
+        opacity = 0.25, hoverinfo = "skip", showlegend = FALSE
+      ) %>%
+      add_trace(
+        data = sub_df, x = ~datetime_sl, y = ~area_km2,
+        type = "scatter", mode = "lines+markers", name = "So far",
+        line = list(color = clr, width = 2.5),
+        marker = list(color = clr, size = 5),
+        text = ~paste0(format(datetime_sl, "%d %b %Y %H:%M"), "<br>",
+                       "Hull area: ", round(area_km2, 3), " km\u00B2"),
+        hoverinfo = "text", showlegend = FALSE
+      ) %>%
+      layout(
+        paper_bgcolor = "#ffffff", plot_bgcolor = "#ffffff",
+        font  = list(color = "#333333", family = "Segoe UI"),
+        xaxis = list(title = "", gridcolor = "#e5e5e5"),
+        yaxis = list(title = "Home-range / hull area (km\u00B2)", gridcolor = "#e5e5e5"),
+        margin = list(t = 20, b = 40, l = 60, r = 20)
+      )
+  })
+
+  # ── Live Latitude / Longitude vs time charts — revealed up to the
+  #    current frame, so the line is drawn in step with the map ────────────
+  make_live_plot <- function(df, sub, y_col, y_title, clr) {
+    plot_ly() %>%
+      add_trace(
+        data = df, x = ~datetime_sl, y = as.formula(paste0("~", y_col)),
+        type = "scatter", mode = "lines", name = "Full track",
+        line = list(color = clr, width = 1, dash = "dot"),
+        opacity = 0.25, hoverinfo = "skip", showlegend = FALSE
+      ) %>%
+      add_trace(
+        data = sub, x = ~datetime_sl, y = as.formula(paste0("~", y_col)),
+        type = "scatter", mode = "lines+markers", name = "Travelled so far",
+        line = list(color = clr, width = 2.5),
+        marker = list(color = clr, size = 5),
+        text = ~paste0(format(datetime_sl, "%d %b %Y %H:%M"), "<br>",
+                       y_title, ": ", round(get(y_col), 5), "\u00B0"),
+        hoverinfo = "text", showlegend = FALSE
+      ) %>%
+      layout(
+        paper_bgcolor = "#ffffff", plot_bgcolor = "#ffffff",
+        font  = list(color = "#333333", family = "Segoe UI"),
+        xaxis = list(title = "", gridcolor = "#e5e5e5"),
+        yaxis = list(title = y_title, gridcolor = "#e5e5e5"),
+        margin = list(t = 20, b = 40, l = 60, r = 20)
+      )
+  }
+
+  output$live_lat_plot <- renderPlotly({
+    df <- live_base_data()
+    validate(need(nrow(df) > 0, "No data."))
+    req(input$live_frame)
+    n   <- min(input$live_frame, nrow(df))
+    make_live_plot(df, df[seq_len(n), ], "lat", "Latitude (\u00B0N)", get_col(input$live_elephant))
+  })
+
+  output$live_lon_plot <- renderPlotly({
+    df <- live_base_data()
+    validate(need(nrow(df) > 0, "No data."))
+    req(input$live_frame)
+    n   <- min(input$live_frame, nrow(df))
+    make_live_plot(df, df[seq_len(n), ], "lon", "Longitude (\u00B0E)", get_col(input$live_elephant))
+  })
+
   # ── Small static reference map: Kaudulla Tank & park boundary ──────────────
   # This is the same geographic anchor (tank + N/S/E/W boundary lines) used
   # for every dashed reference line on the Latitude, Longitude, and
