@@ -16,7 +16,7 @@ library(lattice)
 library(grid)
 library(ggplot2)  
 library(lubridate)
-
+library(scales)
 
 
 #==============================================================
@@ -472,19 +472,34 @@ mcp_compute_bearing <- function(lat1, lon1, lat2, lon2) {
   (bearing + 360) %% 360
 }
 
-mcp_compute_hull <- function(df) {
+mcp_compute_hull <- function(df, ratio = 0.3) {
+  # ratio: 0 = tightest/most concave fit, 1 = same as a convex hull
+  # 0.2-0.4 tends to look close to a "natural" home-range boundary; tune to taste
   if (nrow(df) < 3) {
     return(NULL)
   }
-  hull_indices <- chull(df$lon, df$lat)
-  hull_lons <- c(df$lon[hull_indices], df$lon[hull_indices][1])
-  hull_lats <- c(df$lat[hull_indices], df$lat[hull_indices][1])
-  area_degrees2 <- mcp_shoelace_area(
-    hull_lons[-length(hull_lons)],
-    hull_lats[-length(hull_lats)]
+
+  pts_sf <- df %>%
+    st_as_sf(coords = c("lon", "lat"), crs = 4326)
+
+  hull_sf <- tryCatch(
+    st_concave_hull(st_union(pts_sf), ratio = ratio, allow_holes = FALSE),
+    error = function(e) NULL
   )
-  mean_lat <- mean(df$lat)
-  area_km2 <- area_degrees2 * 111 * (111 * cos(mean_lat * pi / 180))
+
+  # fallback to convex hull if GEOS on this machine is too old for concave hulls
+  if (is.null(hull_sf) || length(hull_sf) == 0 || st_is_empty(hull_sf)) {
+    hull_sf <- st_convex_hull(st_union(pts_sf))
+  }
+
+  coords <- st_coordinates(hull_sf)
+  hull_lons <- coords[, "X"]
+  hull_lats <- coords[, "Y"]
+
+  # geodesic area straight from sf (accounts for lat/lon curvature properly,
+  # more accurate than the shoelace + flat cos(lat) approximation)
+  area_km2 <- as.numeric(st_area(hull_sf)) / 1e6
+
   list(lons = hull_lons, lats = hull_lats, area_km2 = area_km2)
 }
 
