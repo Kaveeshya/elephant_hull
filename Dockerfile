@@ -34,7 +34,7 @@ RUN R -e "install.packages(c( \
 ), repos='https://cran.rstudio.com/', dependencies=TRUE)"
 
 # Copy app files into the Shiny server app directory
-COPY appfinal.R /srv/shiny-server/app/app.R
+COPY app.R /srv/shiny-server/app/app.R
 COPY kaudulla_elephants_clean.csv /srv/shiny-server/app/
 COPY daily_climate.xlsx /srv/shiny-server/app/
 
