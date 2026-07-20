@@ -78,9 +78,9 @@ dr_css <- "
   top: 0;
   height: 100vh;
   overflow-y: auto;
-  box-shadow: 1px 0 4px #0000000a;
+  box-shadow: 1px 0 6px rgba(0,0,0,.06);
 }
-.dr-scope #sidebar .brand { font-size: 14px; font-weight: 700; color: #166534; margin-bottom: 4px; }
+.dr-scope #sidebar .brand { font-size: 16px; font-weight: 800; color: #0f766e; margin-bottom: 4px; letter-spacing: -0.2px; }
 .dr-scope #sidebar .brand-sub { font-size: 10px; color: #64748b; margin-bottom: 16px; line-height: 1.5; }
 
 /* Section headings in sidebar */
@@ -96,7 +96,7 @@ dr_css <- "
 .dr-scope .leg-block {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 6px;
+  border-radius: 10px;
   padding: 9px 10px;
   margin-top: 6px;
   font-size: 11px;
@@ -121,10 +121,10 @@ dr_css <- "
 .dr-scope .panel-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 14px;
   overflow: hidden;
   margin-bottom: 12px;
-  box-shadow: 0 1px 3px #0000000a;
+  box-shadow: 0 2px 12px rgba(0,0,0,.08);
 }
 .dr-scope .panel-hdr {
   background: #f8fafc;
@@ -133,7 +133,7 @@ dr_css <- "
 }
 .dr-scope .panel-hdr h3 {
   font-size: 11px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: .07em; color: #166534; margin: 0 0 2px;
+  letter-spacing: .07em; color: #0f766e; margin: 0 0 2px;
 }
 .dr-scope .panel-hdr .desc { font-size: 10px; color: #64748b; }
 "
@@ -379,14 +379,14 @@ dc_app_css <- "
           font-size:13px;overflow-x:hidden}
 .dc-scope #page-hdr{background:#ffffff;border-bottom:2px solid #e2e8f0;padding:10px 16px;
           display:flex;align-items:center;gap:10px;box-shadow:0 1px 4px #0000000d}
-.dc-scope #page-hdr h1{font-size:14px;font-weight:700;color:#166534;letter-spacing:.04em}
+.dc-scope #page-hdr h1{font-size:14px;font-weight:700;color:#0f766e;letter-spacing:.04em}
 .dc-scope #page-hdr .sub{font-size:11px;color:#64748b}
-.dc-scope .dash-panel{background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;margin:6px;
-            overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 3px #0000000a}
+.dc-scope .dash-panel{background:#ffffff;border:1px solid #e2e8f0;border-radius: 14px;margin:6px;
+            overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(0,0,0,.08)}
 .dc-scope .panel-title{font-size:11px;font-weight:700;text-transform:uppercase;
-             letter-spacing:.07em;color:#166534;white-space:nowrap;padding:6px 2px}
+             letter-spacing:.07em;color:#0f766e;white-space:nowrap;padding:6px 2px}
 .dc-scope .form-control,.dc-scope select{background:#ffffff!important;border:1px solid #cbd5e1!important;
-                     color:#1e293b!important;font-size:11px!important;border-radius:4px;
+                     color:#1e293b!important;font-size:11px!important;border-radius: 8px;
                      padding:3px 7px;min-height:26px;height:auto}
 .dc-scope label{color:#64748b!important;font-size:11px;margin-bottom:4px;display:inline-block;}
 .dc-scope .shiny-input-container{margin-bottom:14px!important;margin-top:4px!important;}
@@ -881,22 +881,22 @@ dn_css <- "
 .dn-scope *, .dn-scope *::before, .dn-scope *::after { box-sizing: border-box; margin: 0; padding: 0; }
 .dn-scope { background: #f1f5f9; color: #1e293b; font-family: system-ui, -apple-system, sans-serif; font-size: 13px; }
 .dn-scope #outer { display: flex; min-height: 100vh; }
-.dn-scope #sidebar { width: 250px; flex-shrink: 0; background: #ffffff; border-right: 1px solid #e2e8f0; padding: 14px; position: sticky; top: 0; height: 100vh; overflow-y: auto; box-shadow: 1px 0 4px #0000000a; }
-.dn-scope #sidebar .brand { font-size: 14px; font-weight: 700; color: #166534; margin-bottom: 4px; }
+.dn-scope #sidebar { width: 250px; flex-shrink: 0; background: #ffffff; border-right: 1px solid #e2e8f0; padding: 14px; position: sticky; top: 0; height: 100vh; overflow-y: auto; box-shadow: 1px 0 6px rgba(0,0,0,.06); }
+.dn-scope #sidebar .brand { font-size: 16px; font-weight: 800; color: #0f766e; margin-bottom: 4px; letter-spacing: -0.2px; }
 .dn-scope #sidebar .brand-sub { font-size: 10px; color: #64748b; margin-bottom: 16px; line-height: 1.5; }
 .dn-scope .sh { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #64748b; margin: 16px 0 6px; padding-top: 14px; border-top: 1px solid #f1f5f9; }
 .dn-scope .sh:first-of-type { border-top: none; padding-top: 0; }
-.dn-scope #sidebar .form-control, .dn-scope #sidebar select { background: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #1e293b !important; font-size: 11px !important; border-radius: 4px; width: 100%; }
+.dn-scope #sidebar .form-control, .dn-scope #sidebar select { background: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #1e293b !important; font-size: 11px !important; border-radius: 8px; width: 100%; }
 .dn-scope #sidebar label { color: #475569 !important; font-size: 11px; }
 .dn-scope #sidebar .shiny-input-container { margin: 0 0 6px !important; }
-.dn-scope .leg-block { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 9px 10px; margin-top: 6px; font-size: 11px; line-height: 2; }
+.dn-scope .leg-block { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 9px 10px; margin-top: 6px; font-size: 11px; line-height: 2; }
 .dn-scope .leg-block strong { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: #64748b; margin-bottom: 4px; }
 .dn-scope .dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
 .dn-scope .note-txt { font-size: 9px; color: #94a3b8; line-height: 1.5; margin-top: 6px; }
 .dn-scope #main { flex: 1; overflow-y: auto; padding: 10px; }
-.dn-scope .panel-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; margin-bottom: 12px; box-shadow: 0 1px 3px #0000000a; }
+.dn-scope .panel-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; margin-bottom: 12px; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
 .dn-scope .panel-hdr { background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 8px 14px; }
-.dn-scope .panel-hdr h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: #166534; margin: 0 0 2px; }
+.dn-scope .panel-hdr h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: #0f766e; margin: 0 0 2px; }
 .dn-scope .panel-hdr .desc { font-size: 10px; color: #64748b; }
 "
 
@@ -1381,17 +1381,17 @@ vt_css <- "
           font-family:system-ui,-apple-system,sans-serif;font-size:13px;overflow-x:hidden}
 .vt-scope #page-hdr{background:#ffffff;border-bottom:2px solid #e2e8f0;padding:10px 16px;
           display:flex;align-items:center;gap:10px;box-shadow:0 1px 4px #0000000d}
-.vt-scope #page-hdr h1{font-size:15px;font-weight:700;color:#166534;letter-spacing:.04em}
+.vt-scope #page-hdr h1{font-size:15px;font-weight:700;color:#0f766e;letter-spacing:.04em}
 .vt-scope #page-hdr .sub{font-size:11px;color:#64748b}
-.vt-scope .dash-panel{background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;margin:6px;
-            overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 3px #0000000a}
+.vt-scope .dash-panel{background:#ffffff;border:1px solid #e2e8f0;border-radius: 14px;margin:6px;
+            overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(0,0,0,.08)}
 
 /* PANEL HEADER: Increased padding and gap to prevent element crowding */
 .vt-scope .panel-hdr{background:#f8fafc;border-bottom:1px solid #e2e8f0;padding:10px 15px;
            display:flex !important;align-items:center !important;gap:15px !important;flex-wrap:wrap;flex-shrink:0}
            
 .vt-scope .panel-title{font-size:11px;font-weight:700;text-transform:uppercase;
-              letter-spacing:.07em;color:#166534;white-space:nowrap}
+              letter-spacing:.07em;color:#0f766e;white-space:nowrap}
 .vt-scope .panel-body{padding:10px;flex:1;min-height:0}
 .vt-scope .row-2{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:6px 0 0}
 
@@ -1407,14 +1407,14 @@ vt_css <- "
 .vt-scope .checkbox-inline label { color: #1e293b !important; font-size: 11px !important; font-weight: 600 !important; margin-bottom: 0 !important; margin-left: 4px !important; }
 
 .vt-scope .form-control,.vt-scope select{background:#ffffff!important;border:1px solid #cbd5e1!important;
-                      color:#1e293b!important;font-size:11px!important;border-radius:4px;
+                      color:#1e293b!important;font-size:11px!important;border-radius: 8px;
                       padding:3px 7px;height:26px}
 .vt-scope label{color:#64748b!important;font-size:10px; margin-bottom: 0 !important;}
 
 .vt-scope .note{font-size:9px;color:#94a3b8;padding:3px 12px 5px;font-style:italic;
       background:#f8fafc;border-top:1px solid #f1f5f9}
 .vt-scope .leaflet-tooltip{background:#ffffffee;border:1px solid #e2e8f0;color:#1e293b;
-                 font-size:11px;padding:5px 8px;border-radius:4px;box-shadow:0 2px 8px #0000001a}
+                 font-size:11px;padding:5px 8px;border-radius: 8px;box-shadow:0 2px 8px #0000001a}
 .vt-scope .leaflet-tooltip-arrow{display:none}
 
 /* Add space between the label and the first checkbox */
@@ -1992,26 +1992,54 @@ tk_veg_css <- "
           font-size:13px;overflow-x:hidden}
 .tk-scope #page-hdr{background:#ffffff;border-bottom:2px solid #e2e8f0;padding:10px 16px;
           display:flex;align-items:center;gap:10px;box-shadow:0 1px 4px #0000000d}
-.tk-scope #page-hdr h1{font-size:14px;font-weight:700;color:#166534;letter-spacing:.04em}
+.tk-scope #page-hdr h1{font-size:14px;font-weight:700;color:#0f766e;letter-spacing:.04em}
 .tk-scope #page-hdr .sub{font-size:11px;color:#64748b}
-.tk-scope .dash-panel{background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;margin:6px;
-            overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 3px #0000000a}
+.tk-scope .dash-panel{background:#ffffff;border:1px solid #e2e8f0;border-radius: 14px;margin:6px;
+            overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(0,0,0,.08)}
 .tk-scope .panel-hdr{background:#f8fafc;border-bottom:1px solid #e2e8f0;padding:7px 12px;
            display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0}
 .tk-scope .panel-title{font-size:11px;font-weight:700;text-transform:uppercase;
-             letter-spacing:.07em;color:#166534;white-space:nowrap}
+             letter-spacing:.07em;color:#0f766e;white-space:nowrap}
 .tk-scope .panel-body{padding:0;flex:1;min-height:0}
 .tk-scope .form-control,.tk-scope select{background:#ffffff!important;border:1px solid #cbd5e1!important;
-                     color:#1e293b!important;font-size:11px!important;border-radius:4px;
+                     color:#1e293b!important;font-size:11px!important;border-radius: 8px;
                      padding:3px 7px;height:26px}
 .tk-scope label{color:#64748b!important;font-size:10px}
 .tk-scope .radio-inline{margin-right:10px!important}
 .tk-scope .radio-inline label{color:#475569!important;font-size:11px!important}
 .tk-scope .leaflet-tooltip{background:#ffffffee;border:1px solid #e2e8f0;color:#1e293b;
-                 font-size:11px;padding:5px 8px;border-radius:4px;box-shadow:0 2px 8px #0000001a}
+                 font-size:11px;padding:5px 8px;border-radius: 8px;box-shadow:0 2px 8px #0000001a}
 .tk-scope .leaflet-tooltip-arrow{display:none}
 .tk-scope .note{font-size:9px;color:#94a3b8;padding:3px 12px 5px;font-style:italic;
       background:#f8fafc;border-top:1px solid #f1f5f9}
+
+/* Native Shiny slider play/pause button — was a plain unstyled triangle */
+.tk-scope .slider-animate-button a {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:24px; height:24px; border-radius:50%;
+  background:#0f766e; color:#ffffff !important;
+  box-shadow:0 2px 6px rgba(15,118,110,.35);
+  transition:background .15s ease;
+}
+.tk-scope .slider-animate-button a:hover { background:#115e59; }
+.tk-scope .slider-animate-button .glyphicon { top:0; }
+
+/* Slider track/handle accent */
+.tk-scope .irs--shiny .irs-bar,
+.tk-scope .irs--shiny .irs-single,
+.tk-scope .irs--shiny .irs-from,
+.tk-scope .irs--shiny .irs-to { background:#0f766e !important; border-color:#0f766e !important; }
+.tk-scope .irs--shiny .irs-handle > i:first-child { background:#0f766e !important; }
+
+/* Radio buttons — teal accent when selected */
+.tk-scope input[type='radio'] { accent-color:#0f766e; }
+.tk-scope input[type='checkbox'] { accent-color:#0f766e; }
+
+/* Date range / select inputs — subtle focus ring */
+.tk-scope .form-control:focus {
+  border-color:#0f766e !important;
+  box-shadow:0 0 0 3px rgba(15,118,110,.15) !important;
+}
 
 /* Updated Alignment CSS */
 .tk-scope .align-left-radio .shiny-options-group {display: flex !important;
@@ -2029,6 +2057,7 @@ tk_veg_css <- "
 .tk-scope .align-left-radio .radio-inline {
     margin-left: 0 !important;
     padding-left: 0 !important;
+}
 
 .tk-scope .align-left-radio .radio-inline:first-child {
     padding-left: 0 !important;
@@ -2070,27 +2099,40 @@ tracking_ui <- function(id) {
         # Middle Row: Controls
         fluidRow(
           column(width = 2,
-                 dateRangeInput(ns("date_range"), "Select Date Range:",
-                                start = "2024-06-01", end = Sys.Date()),
-                 checkboxInput(ns("show_imputed"), "Show Imputed Data Points", value = TRUE)),
+                 div(class = "dash-panel",
+                     div(class = "panel-hdr", span(class = "panel-title", "Date & Filters")),
+                     div(class = "panel-body", style = "padding: 10px 12px;",
+                         dateRangeInput(ns("date_range"), "Select Date Range:",
+                                        start = "2024-06-01", end = Sys.Date()),
+                         checkboxInput(ns("show_imputed"), "Show Imputed Data Points", value = TRUE)))),
           column(width = 2,
-                 uiOutput(ns("temp_range_ui"))),
+                 div(class = "dash-panel",
+                     div(class = "panel-hdr", span(class = "panel-title", "Temperature Range")),
+                     div(class = "panel-body", style = "padding: 10px 12px;",
+                         uiOutput(ns("temp_range_ui"))))),
           column(width = 2,
-                 radioButtons(ns("map_type"), "Map Type:",
-                              choices = c("OpenStreetMap" = "OpenStreetMap",
-                                          "Satellite" = "Esri.WorldImagery",
-                                          "Dark" = "CartoDB.DarkMatter",
-                                          "Light" = "CartoDB.Positron",
-                                          "Topo" = "OpenTopoMap"),
-                              selected = "OpenStreetMap")),
+                 div(class = "dash-panel",
+                     div(class = "panel-hdr", span(class = "panel-title", "Map Type")),
+                     div(class = "panel-body", style = "padding: 10px 12px;",
+                         radioButtons(ns("map_type"), NULL,
+                                      choices = c("OpenStreetMap" = "OpenStreetMap",
+                                                  "Satellite" = "Esri.WorldImagery",
+                                                  "Dark" = "CartoDB.DarkMatter",
+                                                  "Light" = "CartoDB.Positron",
+                                                  "Topo" = "OpenTopoMap"),
+                                      selected = "OpenStreetMap")))),
           column(width = 2,
-                 helpText("Map Legend:"),
-                 HTML("<div style='background: linear-gradient(to right, #FF6B6B, #FFD93D, #6BCB77); width: 100%; height: 10px; margin-bottom: 5px;'></div>"),
-                 HTML("<span style='float: left; font-size: 12px;'>Low</span>"),
-                 HTML("<span style='float: right; font-size: 12px;'>High</span><br><br>"),
-                 HTML("<span style='color:blue; font-size: 16px;'>\u25cf</span><span style='color:black; font-size: 16px;'>\u25cf</span> Current (By Elephant)")),
+                 div(class = "dash-panel",
+                     div(class = "panel-hdr", span(class = "panel-title", "Map Legend")),
+                     div(class = "panel-body", style = "padding: 10px 12px;",
+                         HTML("<div style='background: linear-gradient(to right, #FF6B6B, #FFD93D, #6BCB77); width: 100%; height: 10px; border-radius: 6px; margin-bottom: 6px;'></div>"),
+                         HTML("<div style='display:flex; justify-content:space-between; font-size:11px; color:#64748b;'><span>Low</span><span>High</span></div>"),
+                         HTML("<div style='margin-top:8px; font-size:11px; color:#475569;'><span style='color:#0f766e; font-size: 15px;'>\u25cf</span> <span style='color:#1e293b; font-size: 15px;'>\u25cf</span> Current (By Elephant)</div>")))),
           column(width = 2,
-                 uiOutput(ns("time_slider_ui")))
+                 div(class = "dash-panel",
+                     div(class = "panel-hdr", span(class = "panel-title", "Timeline")),
+                     div(class = "panel-body", style = "padding: 10px 12px;",
+                         uiOutput(ns("time_slider_ui")))))
         ),
 
         hr(),
@@ -2528,8 +2570,54 @@ tracking_server <- function(id) {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 ui <- fluidPage(
-  tags$style(HTML(".tab-content { padding-top: 6px; }")),
-  titlePanel("Kaudulla NP"),
+  tags$head(tags$style(HTML("
+    body { background: #f5f7fb; font-family: 'Segoe UI', system-ui, sans-serif; }
+    .container-fluid { padding-left: 0; padding-right: 0; }
+    .tab-content { padding-top: 6px; }
+
+    /* App header banner */
+    .app-header {
+      text-align: center;
+      padding: 22px 20px 18px;
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 14px;
+    }
+    .app-header h1 {
+      font-size: 28px; font-weight: 800; color: #1e293b;
+      letter-spacing: -0.5px; margin: 0;
+    }
+    .app-header .app-sub {
+      font-size: 13px; color: #64748b; margin-top: 4px;
+    }
+
+    /* Pill-style tab navigation, replacing default Bootstrap nav-tabs */
+    .nav-tabs {
+      border-bottom: none;
+      display: flex; justify-content: center; flex-wrap: wrap;
+      gap: 6px; padding: 0 16px 14px;
+    }
+    .nav-tabs > li { float: none; }
+    .nav-tabs > li > a {
+      border: none; border-radius: 999px; background: #eef2f7;
+      color: #475569; font-weight: 600; font-size: 13.5px;
+      padding: 8px 18px; margin-right: 0; transition: all .15s ease;
+    }
+    .nav-tabs > li > a:hover {
+      background: #dbe4ee; color: #1e293b; border: none;
+    }
+    .nav-tabs > li.active > a,
+    .nav-tabs > li.active > a:hover,
+    .nav-tabs > li.active > a:focus {
+      background: #0f766e; color: #ffffff; border: none;
+      box-shadow: 0 2px 8px rgba(15,118,110,.35);
+    }
+  "))),
+
+  div(class = "app-header",
+      h1("🐘 Kaudulla NP — Elephant Tracker"),
+      div(class = "app-sub", "Combined dashboard · Dona & Recollared · Density & Climate · Day/Night · Vegetation Tracking · Tracking")
+  ),
 
   tabsetPanel(
     id = "main_tabs",
